@@ -38,9 +38,11 @@ class Mapper(threading.Thread):
         :param src_file: the file to be read
         :param dis_file: the file to be written
         :return None
-        """
+        """''
+        # 读取文件
         file_read = open(src_file, 'r')
         file_write = open(dis_file, 'w')
+        # 读取文件的每一行
         file_line = self.read_file(file_read)
         for words in file_line:
             for word in words:
@@ -65,17 +67,19 @@ class Mapper(threading.Thread):
 
     def run(self):
         print("Starting " + self.name)
-
+        # 循环创建线程
         while self.current_node_num < self.map_node_num:
+            # 当前线程的idx
             pre_idx = self.current_node_num + 1
+            # 创建线程
             thread = threading.Thread(target=self.create_map, args=(pre_idx,))
             self.map_thread_list.append(thread)
             thread.start()
-
+            # 此处完成线程数加一，加锁防止多线程同时修改，最后能够创造9个线程
             self.lock.acquire()
             self.current_node_num += 1
             self.lock.release()
-
+        # jion所有线程，目的是等待所有线程执行完毕，
         for i in range(self.map_node_num):
             self.map_queue.put(i)  # put the map idx into the queue
             self.map_thread_list[i].join()

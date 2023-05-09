@@ -26,18 +26,23 @@ class Combiner(threading.Thread):
         :param dis_file: the file to be written
         :return None
         """
+        # 读取文件
         file_read = open(src_file, 'r')
         file_write = open(dis_file, 'w')
         word_dict = {}
+        # 读取文件的每一行
         for line in file_read:
             # print(line)
             line = line.strip()
             word, count = line.split(',')
+            # 使用字典存储单词和出现次数
             if word not in word_dict.keys():
                 word_dict[word] = int(count)
             else:
                 word_dict[word] += int(count)
+        # 按照字典的键排序， 目的是为了方便后续的reduce
         word_dict = sorted(word_dict.items(), key=lambda x: x[0])
+        # 写入combine-x文件中，格式为：word, count
         for word, count in word_dict:
             file_write.write("{},{}\n".format(word, count))
 

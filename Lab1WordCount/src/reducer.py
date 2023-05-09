@@ -15,7 +15,7 @@ class Reducer(threading.Thread):
         self.name = "Reducer"
 
     def reducer(self, src_file: str, dis_file: str) -> None:
-        """write the map process results to file
+        """进行reduce操作
         :param src_file: the file to be read
         :param dis_file: the file to be written
         :return None
@@ -23,11 +23,11 @@ class Reducer(threading.Thread):
         f_read = open(src_file, 'r')
         f_write = open(dis_file, 'w')
         count_dict = {}
-
+        # 同 combine操作几倍类似
         for line in f_read:
             line = line.strip()
-            #print(line)
             word, count = line.split(',', 1)
+            # 将count转换为int类型，如果不能转换则跳过，目的是过滤掉不合法的数据
             try:
                 count = int(count)
             except ValueError:
@@ -36,10 +36,10 @@ class Reducer(threading.Thread):
                 count_dict[word] += count
             else:
                 count_dict[word] = count
-
+        # 按照字典的键排序，目的是方便生成结果
         count_dict = sorted(
             count_dict.items(), key=lambda x: x[0], reverse=False)
-
+        # 写入文件，格式为：word, count
         for k, v in count_dict:
             f_write.write("{},{}\n".format(k, v))
 
