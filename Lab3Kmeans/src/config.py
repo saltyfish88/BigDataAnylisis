@@ -14,7 +14,8 @@ root_dir = os.path.dirname(os.path.dirname(__file__))  # 获取当前文件的�
 src_dir = os.path.dirname(__file__)  # 获取当前文件的目录
 data_dir = os.path.join(root_dir, 'data')  # 获取data目录
 res_dir = os.path.join(root_dir, 'res')  # 获取result目录
+img_dir = os.path.join(root_dir, 'image')  # 获取img目录
 
 # 参数
 cluster_num = 3  # 聚类中心个数
-max_iter = 200  # 最大迭代次数
+max_iter = 10  # 最大迭代次数

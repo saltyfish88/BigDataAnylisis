@@ -8,15 +8,6 @@ plt.rcParams["font.sans-serif"] = ["SimHei"]  # 设置字体
 plt.rcParams["axes.unicode_minus"] = False  # 该语句解决图像中的“-”负号的乱码问题
 
 
-def euclidean_distance(x: int, y: int) -> float:
-    """
-    计算欧式距离
-    :param x: 向量x
-    :param y: 向量y
-    :return: 欧式距离
-    """
-    # 公式 d = sqrt(sum((x-y)^2))
-    return np.sqrt(np.sum(np.square(x - y)))
 
 
 def data_preprocess(file_path: str) -> tuple[pd.DataFrame, pd.DataFrame, int]:
@@ -30,10 +21,12 @@ def data_preprocess(file_path: str) -> tuple[pd.DataFrame, pd.DataFrame, int]:
     # 类 3: 48
     # 读取数据 (13个特征)
     data = pd.read_csv(os.path.join(data_dir, file_path), header=None)
-    # print(data.head())
-    # print(data.info())
+    # 数据归一化
+    # data = (data - data.min()) / (data.max() - data.min())
+    print(data.head())
+    # 去掉第一行的类别
     return data[0], data.drop([0], axis=1), len(data)
-
+    # return data[0], data, len(data)
 
 def cal_sse(mat: np.mat, length: int, k: int = 3) -> float:
     """
@@ -46,9 +39,8 @@ def cal_sse(mat: np.mat, length: int, k: int = 3) -> float:
     sse_num = np.zeros(3)
     sse = 0
     for i in range(length):
-        sse_num[int(mat[i, 1]) - 1] += mat[i, 0]
-    for i in range(k):
-        print("The ", i + 1, sse_num[i])
+        type = int(mat[i, 1]) - 1
+        sse_num[type] += mat[i, 0]
     sse += sum(sse_num)
     print("All sse: ", sse)
     return sse
@@ -64,13 +56,14 @@ def gen_rand_ceter(data: pd.DataFrame, length: int, k: int = 3) -> np.ndarray:
     data_list = data.to_numpy()
     rand_ceter = np.zeros((k, data.shape[1]))
     # 随机生成聚类中心
-    # rand_ceter[i, :] = data_list[np.random.randint(0, length)]
+    # for j in range(data.shape[1]):
+    #     rand_ceter[:, j] = np.random.rand(k)
+    # 缩小范围生成聚类中心
     for j in range(data.shape[1]):
         # 获取每一列的最小值和最大值
-        minJ = min(data_list[:, j])
-        maxJ = max(data_list[:, j])
-        rangeJ = float(maxJ - minJ)
-        rand_ceter[:, j] = minJ + rangeJ * np.random.rand(k)
+        ran = float(max(data_list[:, j]) - min(data_list[:, j]))
+        # 设置随机种子
+        rand_ceter[:, j] = min(data_list[:, j]) + ran * np.random.rand(k)
     return rand_ceter
 
 
@@ -111,7 +104,7 @@ if __name__ == "__main__":
     # 初始化聚类中心
     cluster_centers = gen_rand_ceter(data, length, k)
     #print(cluster_centers)
-
+    sse_list = []
     # 迭代
     for i in range(iter_num):
         print("iter: ", i)
@@ -119,27 +112,40 @@ if __name__ == "__main__":
         for j in range(length):
             min_dist = np.inf
             min_index = -1
+            # 完成分类
             for l in range(k):
-                dist = euclidean_distance(data.iloc[j, :], cluster_centers[l, :])
+                # 计算欧式距离
+                dist = np.sqrt(np.sum(np.power(cluster_centers[l, :] - data.iloc[j, :], 2)))
                 if dist < min_dist:
                     min_dist = dist
                     min_index = l + 1
+            # 标注类别
             mat[j, :] = min_dist, min_index, mat[j, 2]
         #print(mat)
         # 更新聚类中心
+        new_cluster_centers = np.zeros((k, data.shape[1]))
         for j in range(k):
-            cluster_centers[j, :] = np.mean(data.iloc[np.nonzero(mat[:, 1].A == j + 1)[0]], axis=0)
-        #print(cluster_centers)
+            # 计算新的聚类中心
+            new_cluster_centers[j, :] = np.mean(data.iloc[np.nonzero(mat[:, 1].A == j + 1)[0]], axis=0)
+        # cluster_centers = new_cluster_centers
+        print("cluster_centers: ", cluster_centers)
+        sse = cal_sse(mat, length, k)
+        sse_list.append(sse)
+        if np.all(cluster_centers == new_cluster_centers):
+            break
+        else:
+            cluster_centers = new_cluster_centers
     # 计算sse
     sse = cal_sse(mat, length, k)
     # 计算准确率
     acc = gen_acc(mat, length, k)
-    # 画图
-    X = 5  # 总酚
-    Y = 6  # 黄酮
 
-    plt.xlabel('总酚')
-    plt.ylabel('黄酮')
+    # 画图
+    X = 6  # 总酚
+    Y = 7  # 黄酮
+
+    plt.xlabel('特征7')
+    plt.ylabel('特征8')
     plt.title('SSE=%.3f Acc=%.3f' % (sse, acc))
     plt.axis([0, 1, 0, 1])
     for i in range(length):
@@ -149,5 +155,14 @@ if __name__ == "__main__":
             plt.scatter(data.iloc[i, X], data.iloc[i, Y], c='g', marker='o')
         else:
             plt.scatter(data.iloc[i, X], data.iloc[i, Y], c='b', marker='o')
-    plt.show()
+    plt.savefig(os.path.join(img_dir, "res.png"))
+
+    # 画出sse变化图
+    plt.figure()
+    plt.plot(range(len(sse_list)), sse_list)
+    plt.xlabel('iter')
+    plt.ylabel('sse')
+    plt.title('SSE')
+    plt.savefig(os.path.join(img_dir, "sse.png"))
+
 

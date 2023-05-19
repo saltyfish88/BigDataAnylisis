@@ -1,0 +1,39 @@
+
+
+Apriori算法：                     PCY算法：
+C1 cost time: 0.011 s            C1 cost time: 0.277 s
+L1 cost time: 0.261 s            L1 cost time: 0.267 s
+C2 cost time: 0.012 s            C2 cost time: 0.030 s
+L2 cost time: 10.301 s           L2 cost time: 7.868 s
+C3 cost time: 0.092 s            C3 cost time: 0.089 s
+L3 cost time: 4.748 s            L3 cost time: 4.752 s
+Rule cost time: 0.001 s          Rule cost time: 0.001 s
+
+c2集合数： 7140                   C2集合数：5505
+用时: 15.425 s                   用时: 13.284 s
+
+
+
+pcy_generate_c1 cost time: 0.277 s
+pcy_generate_l1 cost time: 0.267 s
+pcy_generate_c2 cost time: 0.020 s
+generate_lk cost time: 8.868 s
+generate_next_ck cost time: 0.052 s
+generate_lk cost time: 2.480 s
+generate_rules cost time: 0.001 s
+
+c2的长度为： 5505
+1阶频繁项集个数为: 120
+2阶频繁项集个数为: 605
+3阶频繁项集个数为: 264
+关联规则个数为: 99
+用时: 11.966041803359985 s
+
+1阶频繁项集个数为: 120
+2阶频繁项集个数为: 605
+3阶频繁项集个数为: 264
+关联规则个数为: 99
+
+哈希桶数量：200          哈希桶数量：100          哈希桶数量：2000
+C2集合数：7791          C2集合数：5891          C2集合数：5505
+耗时：17.461s           耗时: 14.387s           耗时：13.284s

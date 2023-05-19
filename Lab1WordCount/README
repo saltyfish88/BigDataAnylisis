@@ -1,6 +1,4 @@
 Here is the lab of Wordcount:
-
-
 comparsion:
 1
 combiner:33.1s
@@ -13,4 +11,15 @@ orginal55.7s
 
 3
 
+                    对比实验分析：
+第一组：是否使用Combine操作     第二组：Shuffle分区策略
+测试项目：系统运行时间          测试项目：Shuffle部分运行时间
+使用Combine操作：33.1s        使用Hash函数进行分区：21.9s
+不使用Combine操作：55.7s      使用首字母划分策略：32.3s
+性能提升：40.4%               性能提升：32.2%
 
+第三组：使用不同的Reduce节点   第四组：map-combine-shuffle操作是否线程并行
+测试项目：系统运行时间         测试项目：系统运行时间
+使用3个Reduce节点：33.1s      线程并行：36.7s
+使用4个Reduce节点：48.8s      线程不并行：70.6s
+性能提升：32.2%               性能提升：48.1%

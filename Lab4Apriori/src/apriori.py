@@ -112,6 +112,8 @@ def generate_rules(l3: set[frozenset], sup1: dict[frozenset, float], sup2: dict[
                 rule_list.append((set(set1), set(set2), conf12))
             if conf21 >= min_confidence:
                 rule_list.append((set(set2), set(set1), conf21))
+    # 根据置信度排序
+    rule_list = sorted(rule_list, key=lambda x: x[2], reverse=True)
     return rule_list
 
 
@@ -135,5 +137,5 @@ def save_rules(filename: str, rule_list: list) -> None:
     """
     f_write = open(os.path.join(res_dir, filename), 'w')
     for rule in rule_list:
-        f_write.write("[] => [], []\n".format(rule[0], rule[1], rule[2]))
+        f_write.write("{} => {}, {}\n".format(rule[0], rule[1], rule[2]))
 

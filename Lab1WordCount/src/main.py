@@ -77,21 +77,21 @@ if __name__ == '__main__':
     shuffle_queue = queue.Queue(config.Shuffle_Node_Num)
     reduce_queue = queue.Queue(config.Reduce_Node_Num)
 
-    # 声明mapper、combiner、shuffler、reducer操作
+    # 声明mapper、combiner、shuffler操作
+    # map，combine，shuffle操作并行处理
     mapper = Mapper(map_queue=map_queue, map_node_num=config.Map_Node_Num)
+    mapper.start()
     combiner = Combiner(combine_queue=combine_queue, combine_node_num=config.Combine_Node_Num)
+    combiner.start()
     shuffler = Shuffler(combine_queue=combine_queue, shuffle_queue=shuffle_queue,
                         shuffle_node_num=config.Shuffle_Node_Num)
-    reducer = Reducer(reduce_queue=reduce_queue, reduce_node_num=config.Reduce_Node_Num)
-    # map，combine，shuffle操作并行处理
-    mapper.start()
-    combiner.start()
     shuffler.start()
 
     mapper.join()
     combiner.join()
     shuffler.join()
     # 以上三个操作执行完后，执行reduce操作
+    reducer = Reducer(reduce_queue=reduce_queue, reduce_node_num=config.Reduce_Node_Num)
     reducer.start()
     reducer.join()
     #生成结果

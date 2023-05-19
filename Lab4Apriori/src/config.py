@@ -19,4 +19,4 @@ res_dir = os.path.join(root_dir, 'res')  # 获取result目录
 MIN_SUPPORT_OF_FREQ_ITEMS = 0.005  # 频繁项集最小支持度
 MIN_CONFIDENCE = 0.5  # 关联规则最小置信度
 MIN_LIFT = 1.0  # 关联规则最小提升度
-max_hash_size = 10
+max_hash_size = 1000

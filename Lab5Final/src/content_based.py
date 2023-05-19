@@ -1,3 +1,5 @@
+from typing import Union
+
 import numpy as np
 from numpy import ndarray
 from pandas import DataFrame
@@ -19,7 +21,7 @@ index2id = dict(enumerate(movies['movieId']))
 id2index = dict(zip(index2id.values(), index2id.keys()))
 
 
-def predict(user: int, movie: int, k: int = K) -> float | ndarray:
+def predict(user: int, movie: int, k: int = K) -> Union[float, ndarray]:
     """
     Predict the rating of the movie by the user among the k most similar users
     :param user: user id

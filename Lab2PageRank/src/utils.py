@@ -22,9 +22,11 @@ def pageRank(mat:np.array, n, eps):
         iter_num += 1
         # 计算PR值
         pr_ = np.dot(mat, pr)
+        # 归一化
         pr_ /= np.sum(pr_)
         # 计算误差 公式为：sqrt(sum((pr_-pr)^2))
         err = np.sqrt(np.sum(np.square(pr_ - pr)))
+        # err = max(abs(pr_ - pr))
         # 更新PR值
         pr = pr_
         # 保存误差
@@ -49,25 +51,27 @@ def pageRank_teleport(mat, n, eps, damp):
     # 误差列表
     err_list = []
     # 根据阻尼系数计算矩阵
-    mat_ = damp * mat + (1 - damp) / n * np.ones((n, n))
+    # mat_ = damp * mat + (1 - damp) / n * np.ones((n, n))
     # 迭代计算
     while True:
         # 迭代次数加1
         iter_num += 1
 
         # 计算PR值 公式为：PR=αM*PR+(1-α)*e/n
-        pr_ = np.dot(mat_, pr)  # 矩阵相乘
+        pr_ =  np.dot(mat,pr)*damp + (1 - damp) / n * np.ones(n)
         # 归一化
-        pr_ /= np.sum(pr_)
+        # pr_ /= np.sum(pr_)
         # 计算误差
         err = np.sqrt(np.sum(np.square(pr_ - pr)))
+        # 其他方法计算误差
+        # err = max(abs(pr_-pr))
         # 保存误差
         err_list.append(err)
         # 判断是否达到精度
         if err < eps:
             break
         # 更新PR值
-        pr = pr_
+        pr = pr_.copy()
     return err_list, pr, iter_num
 
 
@@ -80,11 +84,11 @@ def analyze_error(err1, err2):
     """
     fig = plt.figure()
     plt.plot(err1, label="Lab2PageRank")
-    plt.plot(err2, label="Lab2PageRank with teleport beta=0.85")
+    plt.plot(err2, label="Lab2PageRank with teleport damp=0.85")
     plt.legend()
-    plt.title("Err - Iterations")
-    plt.xlabel("iter")
-    plt.ylabel("error")
-    plt.show()
+    plt.title("Err——damp = 0.95, eps = 1e-8")
+    plt.xlabel("iter_nums")
+    plt.ylabel("error_value")
+    # plt.show()
     plt.savefig(os.path.join(res_dir, "Err - Iterations1.png"))
 
